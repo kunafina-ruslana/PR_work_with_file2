@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Файловый менеджер</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <section>
+    <h1 id="title">Файлы</h1>
+    <div id="file-list"></div>
+    <a href="/">Назад</a>
+    </section>
+
+    <script>
+        fetch('/api/files')
+            .then(response => response.json())
+            .then(data => {
+                const title = document.getElementById('title');
+                const fileList = document.getElementById('file-list');
+                
+                title.innerHTML = `Файлы (${data.files.length})`;
+                
+                if (data.files.length === 0) {
+                    fileList.innerHTML = '<p>Файлов пока нет</p>';
+                    return;
+                }
+                
+                data.files.forEach(file => {
+                    const div = document.createElement('div');
+                    div.className = 'file-item';
+                    div.innerHTML = `
+                        <strong>${file}</strong>
+                        <a href="/uploads/${file}" download class="file-download">Скачать</a>
+                    `;
+                    fileList.appendChild(div);
+                });
+            })
+            .catch(error => {
+                console.error('Ошибка:', error);
+                document.getElementById('file-list').innerHTML = '<p>Ошибка при загрузке файлов</p>';
+            });
+    </script>
+</body>
+</html>
